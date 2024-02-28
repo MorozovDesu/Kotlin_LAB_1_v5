@@ -1,40 +1,59 @@
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.Assertions.*
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
 
 class NumberUtilsTest {
-
+    
     @Test
-    fun testDistinctNumbersAndAverage() {
-        val input = "1 2 3 4 5 2 6 7 8 3 9"
-        val expectedDistinctNumbers = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9)
-        val expectedAverage = 5.0
-
-        val distinctNumbers = input.split(" ").map { it.toInt() }.distinct()
-        val average = distinctNumbers.sum().toDouble() / distinctNumbers.size
-
-        assertEquals(expectedDistinctNumbers, distinctNumbers) // Проверяем правильность вычисления уникальных чисел
-        assertEquals(expectedAverage, average) // Проверяем правильность вычисления среднего арифметического
+    fun testInputNumbers() {
+        val input = "1 2 3 4 5"
+        System.setIn(input.byteInputStream())
+        assertEquals(listOf(1, 2, 3, 4, 5), inputNumbers())
     }
 
     @Test
-    fun testNoRepeatedNumbers() {
-        val input = "1 2 3"
-        val expectedMessage = "Повторяющихся чисел нет"
-
-        val distinctNumbers = input.split(" ").map { it.toInt() }.distinct()
-        val message = if (input.split(" ").size != distinctNumbers.size) {
-            "Есть повторяющиеся числа"
-        } else {
-            "Повторяющихся чисел нет"
-        }
-
-        assertEquals(expectedMessage, message) // Проверяем сообщение о наличии/отсутствии повторяющихся чисел
+    fun testFindDistinctNumbers() {
+        val numbers = listOf(1, 2, 3, 4, 5, 2, 3)
+        assertEquals(listOf(1, 2, 3, 4, 5), findDistinctNumbers(numbers))
     }
 
     @Test
-    fun testInvalidInput() {
-        val invalidInput = "1 2 3 a 5" // Некорректный ввод с буквой
-        assertThrows<NumberFormatException> { invalidInput.split(" ").map { it.toInt() } }
+    fun testCalculateAverage() {
+        val numbers = listOf(1, 2, 3, 4, 5)
+        assertEquals(3.0, calculateAverage(numbers))
     }
+
+    @Test
+    fun testCheckForDuplicates_NoDuplicates() {
+        val originalNumbers = listOf(1, 2, 3, 4, 5)
+        val distinctNumbers = listOf(6, 7, 8, 9, 10)
+        val outputStream = ByteArrayOutputStream()
+        System.setOut(PrintStream(outputStream))
+        checkForDuplicates(originalNumbers, distinctNumbers)
+        val output = outputStream.toString().trim()
+        assertEquals("Повторяющихся чисел нет", output)
+    }
+
+    @Test
+    fun testCheckForDuplicates_WithDuplicates() {
+        val originalNumbers = listOf(1, 2, 3, 4, 5, 2, 3)
+        val distinctNumbers = listOf(1, 2, 3, 4, 5)
+        val outputStream = ByteArrayOutputStream()
+        System.setOut(PrintStream(outputStream))
+        checkForDuplicates(originalNumbers, distinctNumbers)
+        val output = outputStream.toString().trim()
+        assertEquals("Есть повторяющиеся числа", output)
+    }
+
+    @Test
+    fun testDisplayResult() {
+        val average = 3.0
+        val outputStream = ByteArrayOutputStream()
+        System.setOut(PrintStream(outputStream))
+        displayResult(average)
+        val output = outputStream.toString().trim()
+        assertEquals("Среднее арифметическое без учета повторов: 3.0", output)
+    }
+
 }
